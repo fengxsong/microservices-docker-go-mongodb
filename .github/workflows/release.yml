@@ -21,17 +21,12 @@ jobs:
         uses: actions/checkout@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
-          password: ${{ secrets.CR_PAT }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Get the version
         id: get_version
         run: echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT
@@ -43,8 +38,7 @@ jobs:
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           file: ./users/Dockerfile
           tags: |
-            mmorejon/${{ env.USERS_IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
-            ghcr.io/mmorejon/${{ env.USERS_IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
+            ghcr.io/${{ github.repository_owner }}/${{ env.USERS_IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
       - name: Build and push website microservice
         uses: docker/build-push-action@v3
         with:
@@ -53,8 +47,7 @@ jobs:
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           file: ./website/Dockerfile
           tags: |
-            mmorejon/${{ env.WEBSITE_IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
-            ghcr.io/mmorejon/${{ env.WEBSITE_IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
+            ghcr.io/${{ github.repository_owner }}/${{ env.WEBSITE_IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
       - name: Build and push movies microservice
         uses: docker/build-push-action@v3
         with:
@@ -63,8 +56,7 @@ jobs:
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           file: ./movies/Dockerfile
           tags: |
-            mmorejon/${{ env.MOVIES_IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
-            ghcr.io/mmorejon/${{ env.MOVIES_IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
+            ghcr.io/${{ github.repository_owner }}/${{ env.MOVIES_IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
       - name: Build and push showtimes microservice
         uses: docker/build-push-action@v3
         with:
@@ -73,8 +65,7 @@ jobs:
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           file: ./showtimes/Dockerfile
           tags: |
-            mmorejon/${{ env.SHOWTIMES_IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
-            ghcr.io/mmorejon/${{ env.SHOWTIMES_IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
+            ghcr.io/${{ github.repository_owner }}/${{ env.SHOWTIMES_IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
       - name: Build and push bookings microservice
         uses: docker/build-push-action@v3
         with:
@@ -83,5 +74,4 @@ jobs:
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           file: ./bookings/Dockerfile
           tags: |
-            mmorejon/${{ env.BOOKINGS_IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
-            ghcr.io/mmorejon/${{ env.BOOKINGS_IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
+            ghcr.io/${{ github.repository_owner }}/${{ env.BOOKINGS_IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}

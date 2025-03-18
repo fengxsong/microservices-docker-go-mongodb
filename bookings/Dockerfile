@@ -1,9 +1,12 @@
 # base image
-FROM golang:1.19.3-alpine AS builder
+FROM golang:1.24.1-alpine AS builder
 # create appuser.
 RUN adduser -D -g '' elf
 # create workspace
 WORKDIR /opt/app/
+ARG OTEL_VERSION=v0.9.0
+RUN wget https://github.com/alibaba/opentelemetry-go-auto-instrumentation/releases/download/${OTEL_VERSION}/otel-linux-amd64 -O /usr/local/bin/otel && \
+    chmod +x /usr/local/bin/otel
 COPY go.mod go.sum ./
 # fetch dependancies
 RUN go mod download && \
@@ -11,7 +14,7 @@ RUN go mod download && \
 # copy the source code as the last step
 COPY . .
 # build binary
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -a -installsuffix cgo -o /go/bin/cinema-bookins ./cmd/app
+RUN CGO_ENABLED=0 GOOS=linux otel go build -ldflags="-w -s" -a -installsuffix cgo -o /go/bin/cinema-bookins ./cmd/app
 
 
 # build a small image
